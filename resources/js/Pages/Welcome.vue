@@ -1,24 +1,36 @@
-<script setup>
+<script >
 import { Head, Link } from '@inertiajs/vue3';
 import Banner from "@/Components/Banner.vue";
+import { ref } from 'vue';
+import { usePage } from '@inertiajs/inertia-vue3';
+import axios from "axios";
 
 
-defineProps({
-    canLogin: {
-        type: Boolean,
+const { props } = usePage();
+
+
+
+export default {
+    components:{Head,Link,Banner},
+    data(){
+        return {
+            newsData:null,
+            canLogin:true,
+            canRegister:true
+        }
     },
-    canRegister: {
-        type: Boolean,
+    methods:{
+        getNews(){
+            axios.get('/news').then(responce=>{
+                this.newsData=responce.data})
+
+        }
     },
-    laravelVersion: {
-        type: String,
-        required: true,
-    },
-    phpVersion: {
-        type: String,
-        required: true,
-    },
-});
+    mounted() {
+        this.getNews()
+    }
+}
+
 
 function handleImageError() {
     document.getElementById('screenshot-container')?.classList.add('!hidden');
@@ -26,10 +38,14 @@ function handleImageError() {
     document.getElementById('docs-card-content')?.classList.add('!flex-row');
     document.getElementById('background')?.classList.add('!hidden');
 }
+
+
+
 </script>
 
 <template>
     <Head title="Welcome!!!" />
+
     <div class="bg-gray-50 text-white/50 dark:bg-black dark:text-white/50">
 
         <!--Backgroud-->
@@ -92,6 +108,10 @@ function handleImageError() {
                             </Link>
 
 
+
+
+
+
                             <div class=" flex justify-center items-center dark:bg-gray-800 mr-3">
                                 <button onclick="(() => document.body.classList.toggle('dark'))()"
                                         class="h-12 w-12 rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
@@ -138,9 +158,9 @@ function handleImageError() {
                     </section>
 
 
-                    <div class="flex justify-center items-center">
+                    <div class="flex justify-center h-60 items-center">
 
-                        <div class="relative inline-flex  group">
+                        <div class="relative inline-flex h-60 group relative animate-bounce object-cover w-14 h-14 bg-cyan-800 rounded-full z-0 shadow-2xl shadow-gray-600">
                             <div
                                 class="absolute transitiona-all duration-1000 opacity-70 -inset-px bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] rounded-xl blur-lg group-hover:opacity-100 group-hover:-inset-1 group-hover:duration-200 animate-tilt">
                             </div>
@@ -153,11 +173,16 @@ function handleImageError() {
 
 
 
+
+
                 </main>
 
-                <footer class="py-16 text-center text-sm text-black dark:text-white/70">
-                    Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
-                </footer>
+                <div class="w-3/4 mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl  dark:text-gray-400" v-for="item in newsData" :key="item.id">
+                <h1> {{ item.title }}</h1>
+                <p> {{ item.content}}</p>
+            </div>
+
+
             </div>
         </div>
     </div>
